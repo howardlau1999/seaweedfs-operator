@@ -75,10 +75,14 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "Seaweed")
 		os.Exit(1)
 	}
-	if err = (&seaweedv1.Seaweed{}).SetupWebhookWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create webhook", "webhook", "Seaweed")
-		os.Exit(1)
+
+	if os.Getenv("ENABLE_WEBHOOKS") != "false" {
+		if err = (&seaweedv1.Seaweed{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Seaweed")
+			os.Exit(1)
+		}
 	}
+
 	// +kubebuilder:scaffold:builder
 
 	setupLog.Info("starting manager")
